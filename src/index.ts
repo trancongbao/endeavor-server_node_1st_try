@@ -1,16 +1,15 @@
 import express from "express";
-import bodyParser from "body-parser";
 import {default as userRouter} from "./user/router";
 import {default as courseRouter} from "./course/router";
 
 const app = express();
 
+// Middlewares
+app.use(express.json());
+
 // Routers
 app.use("/user", userRouter);
 app.use("/course", courseRouter);
-
-// Other Middlewares
-app.use(bodyParser.json());
 
 // Server
 app.listen(3000, () => {
