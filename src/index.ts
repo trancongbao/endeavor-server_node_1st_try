@@ -3,11 +3,14 @@ import {default as userDispatcher} from "./user/dispatcher";
 import {default as courseDispatcher} from "./course/dispatcher";
 import { JSONRPCServer } from "json-rpc-2.0";
 import "scope-extensions-js";
+import { verifyUserToken } from "./user/authenticate";
 
 express()
   .also(app => {
       app.use(express.json());
       app.use("/user", jsonRpcRouter(userDispatcher));
+
+      app.use(verifyUserToken);
       app.use("/course", jsonRpcRouter(courseDispatcher));
   })
   .listen(3000, () => { console.log("Express server started on port 3000."); });

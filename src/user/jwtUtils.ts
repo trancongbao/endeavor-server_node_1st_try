@@ -1,10 +1,18 @@
 import jwt from "jsonwebtoken";
 
-const jwtSecret = "your-secret-key";
+export { generateJWT, parseJWT };
+
+const jwtSecret = "secretkey";
 
 function generateJWT(payload: object): string {
-  const options = { expiresIn: "1h" };
-  return jwt.sign(payload, jwtSecret, options);
+  return jwt.sign(payload, jwtSecret, { expiresIn: "1h" });
 }
 
-export { generateJWT };
+function parseJWT(token: string): jwt.JwtPayload | string | undefined {
+  try {
+    return jwt.verify(token, jwtSecret);
+  } catch (error) {
+    console.error("JWT failed to be verified: ", error);
+    return undefined
+  }
+}
