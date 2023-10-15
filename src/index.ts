@@ -5,10 +5,10 @@ import { JSONRPCServer } from "json-rpc-2.0";
 import "scope-extensions-js";
 
 express()
-  .also(it => {
-      it.use(express.json());
-      it.use("/user", jsonRpcRouter(userDispatcher));
-      it.use("/course", jsonRpcRouter(courseDispatcher));
+  .also(app => {
+      app.use(express.json());
+      app.use("/user", jsonRpcRouter(userDispatcher));
+      app.use("/course", jsonRpcRouter(courseDispatcher));
   })
   .listen(3000, () => { console.log("Express server started on port 3000."); });
 

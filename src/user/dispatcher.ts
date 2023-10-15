@@ -1,14 +1,20 @@
 import { JSONRPCServer } from "json-rpc-2.0";
 import pgEndeavorDb from "../databases/postgres"
 import { generateJWT } from "./jwtUtils";
+import "scope-extensions-js";
 
-const dispatcher = new JSONRPCServer();
+export default new JSONRPCServer().apply (
+  function() {
+    this.addMethod("login", loginHandler);
+    this.addMethod("logout", ({ message }: { message: string }) => {
+      console.log(`User logout: ${message}`);
+    });
+  }
+)
 
-dispatcher.addMethod("login", ({ userType, username, password }) => {
-  return pgEndeavorDb.oneOrNone(
-    `SELECT * FROM ${userType} WHERE username = $1 AND password = $2`,
-    [username, password]
-  )
+function loginHandler({ userType, username, password }: { userType: string, username: string, password: string }) {
+  return pgEndeavorDb
+    .oneOrNone(`SELECT * FROM ${userType} WHERE username = $1 AND password = $2`, [username, password])
     .then((user) => {
       if (user) {
         const jwt = generateJWT({ username: username });
@@ -22,10 +28,4 @@ dispatcher.addMethod("login", ({ userType, username, password }) => {
       console.error("Database error:", error);
       return { error: "An error occurred while processing your request." };
     });
-});
-
-dispatcher.addMethod("logout", ({ message }: { message: string }) => {
-  console.log(`User logout: ${message}`);
-});
-
-export default dispatcher;
+}
