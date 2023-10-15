@@ -1,6 +1,6 @@
 import { JSONRPCServer } from "json-rpc-2.0";
 import pgEndeavorDb from "../databases/postgres"
-import { generateJWT } from "./jwtUtils";
+import { generateJWT } from "../jwt/jwt";
 import "scope-extensions-js";
 
 export default new JSONRPCServer().apply (

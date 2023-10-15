@@ -1,9 +1,25 @@
-import jwt from 'jsonwebtoken';
-import { JSONRPCServer, createJSONRPCErrorResponse } from "json-rpc-2.0";
+import jwt from "jsonwebtoken";
+import { createJSONRPCErrorResponse } from "json-rpc-2.0";
 
-export { verifyUserToken } 
+export { generateJWT, processJWT };
 
-function verifyUserToken(request: any, response: any, next: any) {
+const jwtSecret = "secretkey";
+
+function generateJWT(payload: object): string {
+  return jwt.sign(payload, jwtSecret, { expiresIn: "1h" });
+}
+
+/**
+ * This middleware function extracts a JWT token from the request Authorization header.
+ * It then parses and verifies the token.
+ * If the token is invalid or an error occurs, it creates an appropriate JSON-RPC error response and ends the middleware stack.
+ * If the token exists and is valid, it adds the token payload as a `user` field to the request.
+ * @param {Object} request - The HTTP request object.
+ * @param {Object} response - The HTTP response object.
+ * @param {function} next - The callback to proceed with the middleware stack.
+ * @returns {void}
+ */
+function processJWT(request: any, response: any, next: any): void {
   let authorizationHeader = request.headers.authorization as string | undefined;
   let body = request.body
   
