@@ -2,30 +2,29 @@ import express from "express";
 import {default as userDispatcher} from "./user/dispatcher";
 import {default as courseDispatcher} from "./course/dispatcher";
 import { JSONRPCServer } from "json-rpc-2.0";
+import "scope-extensions-js";
 
-const app = express();
+express()
+  .also(it => {
+      it.use(express.json());
+      it.use("/user", jsonRpcRouter(userDispatcher));
+      it.use("/course", jsonRpcRouter(courseDispatcher));
+  })
+  .listen(3000, () => { console.log("Express server started on port 3000."); });
 
-// Middlewares
-app.use(express.json());
-
-// Routers
-app.use("/user", jsonRPCRouter(userDispatcher));
-app.use("/course", jsonRPCRouter(courseDispatcher));
-
-// Server
-app.listen(3000, () => {
-  console.log("Express server started on port 3000");
-});
-
-function jsonRPCRouter(dispatcher: JSONRPCServer<void>) {
-  const router = express.Router();
-  router.post("/", (req, res) => {
-    const jsonRPCRequest = req.body;
-    dispatcher.receive(jsonRPCRequest).then((jsonRPCResponse) => {
-      if (jsonRPCResponse) {
-        res.json(jsonRPCResponse);
-      }
+function jsonRpcRouter(jsonRpcDispatcher: JSONRPCServer<void>) {
+  return express.Router().let(router => {
+    return router.post("/", (request, response) => {
+      jsonRpcDispatcher.receive(request.body).then((jsonRpcResponse) => {
+          if (jsonRpcResponse) {
+            response.json(jsonRpcResponse);
+          } else {
+            /*
+            * The Server MUST NOT reply to a Notification.
+            * Ref: https://www.jsonrpc.org/specification#notification
+            */
+          }
+      });
     });
-  });
-  return router
+  })
 }

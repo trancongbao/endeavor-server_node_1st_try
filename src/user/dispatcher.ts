@@ -1,26 +1,17 @@
 import { JSONRPCServer } from "json-rpc-2.0";
-import pgPromise from "pg-promise";
+import pgEndeavorDb from "../databases/postgres"
 import { generateJWT } from "./jwtUtils";
 
 const dispatcher = new JSONRPCServer();
 
-const pgp = pgPromise();
-const db = pgp({
-  user: "postgres",
-  host: "localhost",
-  database: "endeavor",
-  password: "postgres",
-  port: 5432,
-});
-
 dispatcher.addMethod("login", ({ userType, username, password }) => {
-  return db.oneOrNone(
+  return pgEndeavorDb.oneOrNone(
     `SELECT * FROM ${userType} WHERE username = $1 AND password = $2`,
     [username, password]
   )
     .then((user) => {
       if (user) {
-        const jwt = generateJWT({username: username} );
+        const jwt = generateJWT({ username: username });
         return { jwt };
       } else {
         console.info("Invalid username or password.");
