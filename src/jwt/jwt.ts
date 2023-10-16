@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { createJSONRPCErrorResponse } from "json-rpc-2.0";
+import { JSONRPCID, createJSONRPCErrorResponse } from "json-rpc-2.0";
 
 export { generateJWT, processJWT };
 
@@ -24,32 +24,38 @@ function processJWT(request: any, response: any, next: any): void {
   let body = request.body
   
   try {
-  if (!authorizationHeader) {
-    response.json(
-      createJSONRPCErrorResponse(body.id, -33001, 'JWT Verification Failed: Missing Authorization header.')
-    ) 
-  } else {
-        // Authorization header should have the form `Bearer Token`
-        let token = authorizationHeader.split(' ')[1];
-        if (token === 'null' || !token) {
-          response.json(
-            createJSONRPCErrorResponse(body.id, -33001, 'JWT Verification Failed: Missing Authorization header.')
-          ) 
-        }
+    if (!authorizationHeader) {
+      sendJSONRPCErrorResponse(response, body.id, -33001)
+    } else {
+      // Authorization header should have the form `Bearer Token`
+      let token = authorizationHeader.split(' ')[1];
+      if (token === 'null' || !token) {
+        sendJSONRPCErrorResponse(response, body.id, -33002)
+      }
 
-        let verifiedUser = jwt.verify(token, 'secretKey');
-        if (!verifiedUser) {
-          response.json(
-            createJSONRPCErrorResponse(body.id, -33001, 'JWT Verification Failed: Missing Authorization header.')
-          ) 
-        }
+      let verifiedUser = jwt.verify(token, 'secretKey');
+      if (!verifiedUser) {
+        sendJSONRPCErrorResponse(response, body.id, -33003)
+      }
 
-        request.user = verifiedUser;
-        next();
-      }      
+      request.user = verifiedUser;
+      next();
+    }      
   } catch (error) {
-      response.json(
-        createJSONRPCErrorResponse(body.id, -33001, 'JWT Verification Failed: Missing Authorization header.')
-      )
+    console.error('JWT Verification Failed: Unexpected error. ', error)
+    sendJSONRPCErrorResponse(response, body.id, -33000)
   }
+}
+
+const jsonRpcErrorCodes: Record<number, string> = {
+  [-33000]: 'JWT Verification Failed: Unexpected error.',
+  [-33001]: 'JWT Verification Failed: Missing Authorization header.',
+  [-33002]: 'JWT Verification Failed: Missing JWT token.',
+  [-33003]: 'JWT Verification Failed: Invalid JWT token.'
+};
+
+function sendJSONRPCErrorResponse(response: any, id: JSONRPCID, code: any) {
+  response.json(
+    createJSONRPCErrorResponse(id, code, jsonRpcErrorCodes[code])
+  )
 }
