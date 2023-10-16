@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { JSONRPCID, createJSONRPCErrorResponse } from "json-rpc-2.0";
+import { sendJSONRPCErrorResponse } from "../error/error"; 
 
 export { generateJWT, processJWT };
 
@@ -12,8 +12,8 @@ function generateJWT(payload: object): string {
 /**
  * This middleware function extracts a JWT token from the request Authorization header.
  * It then parses and verifies the token.
- * If the token is invalid or an error occurs, it creates an appropriate JSON-RPC error response and ends the middleware stack.
- * If the token exists and is valid, it adds the token payload as a `user` field to the request.
+ * If the token is invalid or an error occurs, it sends an appropriate JSON-RPC error response and ends the middleware stack.
+ * If the token exists and is valid, it adds the token payload as a `user` field to the request and calls next().
  * @param {Object} request - The HTTP request object.
  * @param {Object} response - The HTTP response object.
  * @param {function} next - The callback to proceed with the middleware stack.
@@ -45,17 +45,4 @@ function processJWT(request: any, response: any, next: any): void {
     console.error('JWT Verification Failed: Unexpected error. ', error)
     sendJSONRPCErrorResponse(response, body.id, -33000)
   }
-}
-
-const jsonRpcErrorCodes: Record<number, string> = {
-  [-33000]: 'JWT Verification Failed: Unexpected error.',
-  [-33001]: 'JWT Verification Failed: Missing Authorization header.',
-  [-33002]: 'JWT Verification Failed: Missing JWT token.',
-  [-33003]: 'JWT Verification Failed: Invalid JWT token.'
-};
-
-function sendJSONRPCErrorResponse(response: any, id: JSONRPCID, code: any) {
-  response.json(
-    createJSONRPCErrorResponse(id, code, jsonRpcErrorCodes[code])
-  )
 }
