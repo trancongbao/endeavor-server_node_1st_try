@@ -33,7 +33,7 @@ function processJWT(request: any, response: any, next: any): void {
         sendJSONRPCErrorResponse(response, body.id, -33002)
       }
 
-      let verifiedUser = jwt.verify(token, 'secretKey');
+      let verifiedUser = jwt.verify(token, jwtSecret);
       if (!verifiedUser) {
         sendJSONRPCErrorResponse(response, body.id, -33003)
       }

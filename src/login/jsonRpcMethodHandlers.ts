@@ -5,11 +5,11 @@ import "scope-extensions-js";
 
 export default new JSONRPCServer().apply (
   function() {
-    this.addMethod("login", loginHandler);
+    this.addMethod("login", loginJsonRpcMethodHandler);
   }
 )
 
-function loginHandler({ userType, username, password }: { userType: UserType; username: string; password: string }) {
+function loginJsonRpcMethodHandler({ userType, username, password }: { userType: UserType; username: string; password: string }) {
   return pgEndeavorDb
     .oneOrNone(`SELECT * FROM ${userType} WHERE username = $1 AND password = $2`, [username, password])
     .then((user) => {
