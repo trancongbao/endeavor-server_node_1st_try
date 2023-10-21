@@ -1,6 +1,10 @@
 import { JSONRPCServer } from 'json-rpc-2.0';
 import bcrypt from 'bcryptjs';
-import { TeacherInsertable, TeacherSelectable, db } from './kysely';
+import {
+  TeacherInsertable,
+  TeacherSelectable,
+  endeavorPostgresDB,
+} from './kysely';
 import 'scope-extensions-js';
 
 export default new JSONRPCServer().apply(function () {
@@ -15,7 +19,7 @@ function createTeacher(teacher: TeacherInsertable) {
     teacher.password = hashedPassword;
   });
 
-  return db
+  return endeavorPostgresDB
     .insertInto('teacher')
     .values(teacher)
     .returningAll()
