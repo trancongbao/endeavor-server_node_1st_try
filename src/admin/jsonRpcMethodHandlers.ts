@@ -1,6 +1,7 @@
 import { JSONRPCServer } from 'json-rpc-2.0';
 import bcrypt from 'bcryptjs';
 import { TeacherInsertable, TeacherSelectable, db } from './kysely';
+import 'scope-extensions-js';
 
 export default new JSONRPCServer().apply(function () {
   this.addMethod('createTeacher', createTeacher);
@@ -10,14 +11,18 @@ export default new JSONRPCServer().apply(function () {
 });
 
 function createTeacher(teacher: TeacherInsertable) {
-  const hasPassword = bcrypt.hash(teacher.password, 13, (passwordHash) => {
-    db.insertInto('teacher')
-      .values(teacher)
-      .returningAll()
-      .executeTakeFirstOrThrow();
-    console.log(`User added: ${teacher}`);
-    return 'User added successfully!';
+  bcrypt.hash(teacher.password, 13, (_, hashedPassword) => {
+    teacher.password = hashedPassword;
   });
+
+  return db
+    .insertInto('teacher')
+    .values(teacher)
+    .returningAll()
+    .executeTakeFirstOrThrow()
+    .also(function () {
+      console.log(`Teacher added: ${JSON.stringify(teacher)}`);
+    });
 }
 
 function readTeacher(teacherId: number) {}
