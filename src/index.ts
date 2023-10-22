@@ -15,12 +15,12 @@ express()
     // Login
     app.use("/login", jsonRpcRouter(loginJsonRpcMethodHandlers));
 
-    // JWT token must be verified for following routes
+    // JWT token must be processed for following routes
     app.use(processJWT);
 
     app.use("/study", jsonRpcRouter(studyJsonRpcMethodHandlers));
 
-    // JWT token must be verified for following routes
+    // User type must be ADMIN for the following routes
     app.use(isAdmin);
     app.use("/admin", jsonRpcRouter(adminJsonRpcMethodHandlers));
   })

@@ -8,7 +8,7 @@ function sendJsonRpcErrorResponse(response: any, id: JSONRPCID, code: JsonRpcErr
 }
 
 enum JsonRpcErrorCodes {
-  //JWT
+  //Authorization
   Authorization_UnexpectedError = -33000,
   Authorization_AuthorizationHeaderMissing = -33001,
   Authorization_JwtTokenMissing = -33002,
