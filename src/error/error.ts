@@ -15,6 +15,8 @@ enum JsonRpcErrorCodes {
   Authorization_JwtTokenExpired = -33003,
   Authorization_JwtTokenInvalid = -33004,
   Authorization_AdminPrivilegeRequired = -33005,
+  Authorization_TeacherPrivilegeRequired = -33006,
+  Authorization_StudentPrivilegeRequired = -33007,
 }
 
 const jsonRpcErrorCodes: Record<JsonRpcErrorCodes, string> = {
@@ -25,4 +27,6 @@ const jsonRpcErrorCodes: Record<JsonRpcErrorCodes, string> = {
   [JsonRpcErrorCodes.Authorization_JwtTokenExpired]: "Authorization failed: JWT token expired.",
   [JsonRpcErrorCodes.Authorization_JwtTokenInvalid]: "Authorization failed: Invalid JWT token.",
   [JsonRpcErrorCodes.Authorization_AdminPrivilegeRequired]: "Authorization failed: Admin privilege required.",
+  [JsonRpcErrorCodes.Authorization_TeacherPrivilegeRequired]: "Authorization failed: Teacher privilege required.",
+  [JsonRpcErrorCodes.Authorization_StudentPrivilegeRequired]: "Authorization failed: Student privilege required.",
 };

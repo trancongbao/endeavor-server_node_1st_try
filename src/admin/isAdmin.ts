@@ -7,6 +7,5 @@ function isAdmin(request: any, response: any, next: any): void {
     next();
   } else {
     sendJsonRpcErrorResponse(response, request.id, JsonRpcErrorCodes.Authorization_AdminPrivilegeRequired);
-    console.info()
   }
 }

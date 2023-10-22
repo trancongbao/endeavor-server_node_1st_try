@@ -6,6 +6,7 @@ import { default as studyJsonRpcMethodHandlers } from "./study/jsonRpcMethodHand
 import { JSONRPCServer } from "json-rpc-2.0";
 import { processJWT } from "./jwt/jwt";
 import { isAdmin } from "./admin/isAdmin";
+import { isStudent } from "./study/isStudent";
 
 express()
   .also((app) => {
@@ -17,7 +18,7 @@ express()
 
     // JWT token must be processed for all following routes
     app.use(processJWT);
-    app.use("/study", jsonRpcRouter(studyJsonRpcMethodHandlers));
+    app.use("/study", isStudent, jsonRpcRouter(studyJsonRpcMethodHandlers));
     app.use("/admin", isAdmin, jsonRpcRouter(adminJsonRpcMethodHandlers));
   })
   .listen(3000, () => {
