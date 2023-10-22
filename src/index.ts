@@ -1,10 +1,11 @@
+import "scope-extensions-js";
 import express from "express";
 import { default as loginJsonRpcMethodHandlers } from "./login/jsonRpcMethodHandlers";
 import { default as adminJsonRpcMethodHandlers } from "./admin/jsonRpcMethodHandlers";
 import { default as studyJsonRpcMethodHandlers } from "./study/jsonRpcMethodHandlers";
 import { JSONRPCServer } from "json-rpc-2.0";
-import "scope-extensions-js";
 import { processJWT } from "./jwt/jwt";
+import { isAdmin } from "./admin/isAdmin";
 
 express()
   .also((app) => {
@@ -17,8 +18,11 @@ express()
     // JWT token must be verified for following routes
     app.use(processJWT);
 
-    app.use("/admin", jsonRpcRouter(adminJsonRpcMethodHandlers));
     app.use("/study", jsonRpcRouter(studyJsonRpcMethodHandlers));
+
+    // JWT token must be verified for following routes
+    app.use(isAdmin);
+    app.use("/admin", jsonRpcRouter(adminJsonRpcMethodHandlers));
   })
   .listen(3000, () => {
     console.log("Express server started on port 3000.");
