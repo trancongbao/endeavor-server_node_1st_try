@@ -2,10 +2,12 @@ import "scope-extensions-js";
 import express from "express";
 import { default as loginJsonRpcMethodHandlers } from "./login/jsonRpcMethodHandlers";
 import { default as adminJsonRpcMethodHandlers } from "./admin/jsonRpcMethodHandlers";
+import { default as teachJsonRpcMethodHandlers } from "./teach/jsonRpcMethodHandlers";
 import { default as studyJsonRpcMethodHandlers } from "./study/jsonRpcMethodHandlers";
 import { JSONRPCServer } from "json-rpc-2.0";
 import { processJWT } from "./jwt/jwt";
 import { isAdmin } from "./admin/isAdmin";
+import { isTeacher } from "./teach/isTeacher";
 import { isStudent } from "./study/isStudent";
 
 express()
@@ -19,6 +21,7 @@ express()
     // JWT token must be processed for all following routes
     app.use(processJWT);
     app.use("/study", isStudent, jsonRpcRouter(studyJsonRpcMethodHandlers));
+    app.use("/teach", isTeacher, jsonRpcRouter(teachJsonRpcMethodHandlers));
     app.use("/admin", isAdmin, jsonRpcRouter(adminJsonRpcMethodHandlers));
   })
   .listen(3000, () => {
