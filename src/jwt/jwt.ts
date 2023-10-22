@@ -1,12 +1,12 @@
-import jwt from "jsonwebtoken";
-import { sendJSONRPCErrorResponse } from "../error/error"; 
+import jwt from 'jsonwebtoken';
+import { sendJSONRPCErrorResponse } from '../error/error';
 
 export { generateJWT, processJWT };
 
-const jwtSecret = "secretkey";
+const jwtSecret = 'secretkey';
 
 function generateJWT(payload: object): string {
-  return jwt.sign(payload, jwtSecret, { expiresIn: "1h" });
+  return jwt.sign(payload, jwtSecret, { expiresIn: '3h' });
 }
 
 /**
@@ -21,28 +21,28 @@ function generateJWT(payload: object): string {
  */
 function processJWT(request: any, response: any, next: any): void {
   let authorizationHeader = request.headers.authorization as string | undefined;
-  let body = request.body
-  
+  let body = request.body;
+
   try {
     if (!authorizationHeader) {
-      sendJSONRPCErrorResponse(response, body.id, -33001)
+      sendJSONRPCErrorResponse(response, body.id, -33001);
     } else {
       // Authorization header should have the form `Bearer Token`
       let token = authorizationHeader.split(' ')[1];
       if (token === 'null' || !token) {
-        sendJSONRPCErrorResponse(response, body.id, -33002)
+        sendJSONRPCErrorResponse(response, body.id, -33002);
       }
 
       let verifiedUser = jwt.verify(token, jwtSecret);
       if (!verifiedUser) {
-        sendJSONRPCErrorResponse(response, body.id, -33003)
+        sendJSONRPCErrorResponse(response, body.id, -33003);
       }
 
       request.user = verifiedUser;
       next();
-    }      
+    }
   } catch (error) {
-    console.error('JWT Verification Failed: Unexpected error. ', error)
-    sendJSONRPCErrorResponse(response, body.id, -33000)
+    console.error('JWT Verification Failed: Unexpected error. ', error);
+    sendJSONRPCErrorResponse(response, body.id, -33000);
   }
 }

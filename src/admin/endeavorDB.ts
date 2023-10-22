@@ -1,7 +1,7 @@
-import { TeacherTable } from './teacherTable';
-import { Pool } from 'pg';
 import 'scope-extensions-js';
+import { Pool } from 'pg';
 import { Kysely, PostgresDialect } from 'kysely';
+import { TeacherTable } from './teacherTable';
 import { StudentTable } from './studentTable';
 
 export default new Pool({

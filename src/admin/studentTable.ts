@@ -10,6 +10,7 @@ export interface StudentTable {
   date_of_birth: Date;
   address: string;
   avatar: string;
+  proficiency: number;
 }
 
 export type StudentSelectable = Selectable<StudentTable>;

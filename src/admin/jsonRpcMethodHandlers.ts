@@ -1,11 +1,9 @@
-import { JSONRPCServer } from 'json-rpc-2.0';
 import 'scope-extensions-js';
+import { JSONRPCServer } from 'json-rpc-2.0';
 import bcrypt from 'bcryptjs';
 import endeavorDB from './endeavorDB';
-import {
-  TeacherInsertable as StudentInsertable,
-  TeacherSelectable,
-} from './teacherTable';
+import { TeacherInsertable, TeacherSelectable } from './teacherTable';
+import { StudentInsertable, StudentUpdatable } from './studentTable';
 
 export default new JSONRPCServer().apply(function () {
   //Teacher
@@ -28,7 +26,7 @@ export default new JSONRPCServer().apply(function () {
 /*
  * Teacher
  */
-function createTeacher(teacher: StudentInsertable) {
+function createTeacher(teacher: TeacherInsertable) {
   bcrypt.hash(teacher.password, 13, (_, hashedPassword) => {
     teacher.password = hashedPassword;
   });
@@ -38,9 +36,7 @@ function createTeacher(teacher: StudentInsertable) {
     .values(teacher)
     .returningAll()
     .executeTakeFirstOrThrow()
-    .also(function () {
-      console.log(`Teacher added: ${JSON.stringify(teacher)}`);
-    });
+    .also(() => console.log(`Teacher created: ${JSON.stringify(teacher)}`));
 }
 
 function readTeacher(teacherId: number) {}
@@ -62,13 +58,25 @@ function createStudent(student: StudentInsertable) {
     .values(student)
     .returningAll()
     .executeTakeFirstOrThrow()
-    .also(function () {
-      console.log(`Student added: ${JSON.stringify(student)}`);
-    });
+    .also(() => console.log(`Student created: ${JSON.stringify(student)}`));
 }
 
-function readStudent(teacherId: number) {}
+function readStudent({ username }: { username: string }) {
+  return endeavorDB
+    .selectFrom('student')
+    .selectAll()
+    .where('username', '=', username)
+    .executeTakeFirstOrThrow();
+}
 
-function updateStudent(teacherId: number) {}
+function updateStudent(student: StudentUpdatable) {
+  return endeavorDB
+    .updateTable('student')
+    .where('username', '=', student.username!!)
+    .set(student)
+    .returningAll()
+    .executeTakeFirstOrThrow()
+    .also(() => console.log(`Student updated: ${JSON.stringify(student)}`));
+}
 
-function deleteStudent(teacherId: number) {}
+function deleteStudent({ username }: { username: string }) {}
