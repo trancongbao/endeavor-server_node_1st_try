@@ -13,6 +13,9 @@ import {
   deleteStudent,
 } from './studentMethods';
 
+/*
+ * JSON-RPC Method Handlers
+ */
 export default new JSONRPCServer().apply(function () {
   //Teacher
   this.addMethod('createTeacher', createTeacher);

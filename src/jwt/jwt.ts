@@ -1,12 +1,12 @@
-import jwt from 'jsonwebtoken';
-import { sendJSONRPCErrorResponse } from '../error/error';
+import jwt from "jsonwebtoken";
+import { sendJsonRpcErrorResponse, JsonRpcErrorCodes } from "../error/error";
 
 export { generateJWT, processJWT };
 
-const jwtSecret = 'secretkey';
+const jwtSecret = "secretkey";
 
 function generateJWT(payload: object): string {
-  return jwt.sign(payload, jwtSecret, { expiresIn: '3h' });
+  return jwt.sign(payload, jwtSecret, { expiresIn: "3h" });
 }
 
 /**
@@ -25,24 +25,39 @@ function processJWT(request: any, response: any, next: any): void {
 
   try {
     if (!authorizationHeader) {
-      sendJSONRPCErrorResponse(response, body.id, -33001);
+      console.info("Authorization failed: Authoriation header missing.");
+      sendJsonRpcErrorResponse(response, body.id, JsonRpcErrorCodes.Authorization_AuthorizationHeaderMissing);
     } else {
-      // Authorization header should have the form `Bearer Token`
-      let token = authorizationHeader.split(' ')[1];
-      if (token === 'null' || !token) {
-        sendJSONRPCErrorResponse(response, body.id, -33002);
+      let token = authorizationHeader.split(" ")[1];
+      if (token === "null" || !token) {
+        console.info(
+          "Authorization failed: JWT token missing. Authorization header must have the form `Bearer ${JwtToken}`"
+        );
+        sendJsonRpcErrorResponse(response, body.id, JsonRpcErrorCodes.Authorization_JwtTokenMissing);
       }
 
-      let verifiedUser = jwt.verify(token, jwtSecret);
+      let verifiedUser;
+      try {
+        verifiedUser = jwt.verify(token, jwtSecret);
+      } catch (error: any) {
+        if (error.info === "TokenExpiredError") {
+          console.error("Authorization failed: JWT token expired.", error);
+          sendJsonRpcErrorResponse(response, body.id, JsonRpcErrorCodes.Authorization_JwtTokenExpired);
+        } else {
+          console.error("Authorization failed: Unexpected error while verifying JWT token.", error);
+          sendJsonRpcErrorResponse(response, body.id, JsonRpcErrorCodes.Authorization_UnexpectedError);
+        }
+      }
+
       if (!verifiedUser) {
-        sendJSONRPCErrorResponse(response, body.id, -33003);
+        sendJsonRpcErrorResponse(response, body.id, JsonRpcErrorCodes.Authorization_JwtTokenInvalid);
       }
 
       request.user = verifiedUser;
       next();
     }
   } catch (error) {
-    console.error('JWT Verification Failed: Unexpected error. ', error);
-    sendJSONRPCErrorResponse(response, body.id, -33000);
+    console.error("Authorization failed: Unexpected error.", error);
+    sendJsonRpcErrorResponse(response, body.id, JsonRpcErrorCodes.Authorization_UnexpectedError);
   }
 }
