@@ -25,14 +25,10 @@ function processJWT(request: any, response: any, next: any): void {
 
   try {
     if (!authorizationHeader) {
-      console.info("Authorization failed: Authoriation header missing.");
       sendJsonRpcErrorResponse(response, body.id, JsonRpcErrorCodes.Authorization_AuthorizationHeaderMissing);
     } else {
       let token = authorizationHeader.split(" ")[1];
       if (token === "null" || !token) {
-        console.info(
-          "Authorization failed: JWT token missing. Authorization header must have the form `Bearer ${JwtToken}`"
-        );
         sendJsonRpcErrorResponse(response, body.id, JsonRpcErrorCodes.Authorization_JwtTokenMissing);
       }
 
@@ -41,7 +37,6 @@ function processJWT(request: any, response: any, next: any): void {
         verifiedUser = jwt.verify(token, jwtSecret);
       } catch (error: any) {
         if (error.info === "TokenExpiredError") {
-          console.error("Authorization failed: JWT token expired.", error);
           sendJsonRpcErrorResponse(response, body.id, JsonRpcErrorCodes.Authorization_JwtTokenExpired);
         } else {
           console.error("Authorization failed: Unexpected error while verifying JWT token.", error);
