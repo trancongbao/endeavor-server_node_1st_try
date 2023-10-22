@@ -1,13 +1,13 @@
-import 'scope-extensions-js';
-import { Pool } from 'pg';
-import { Kysely, PostgresDialect } from 'kysely';
+import "scope-extensions-js";
+import { Pool } from "pg";
+import { Kysely, PostgresDialect, Generated, ColumnType } from "kysely";
 
 export default new Pool({
-  host: 'localhost',
+  host: "localhost",
   port: 5432,
-  user: 'postgres',
-  password: 'postgres',
-  database: 'endeavor',
+  user: "postgres",
+  password: "postgres",
+  database: "endeavor",
   max: 10,
 })
   .let((pool) => new PostgresDialect({ pool }))
@@ -16,6 +16,7 @@ export default new Pool({
 interface Database {
   teacher: TeacherTable;
   student: StudentTable;
+  course: CourseTable;
 }
 
 export interface StudentTable {
@@ -41,4 +42,23 @@ export interface TeacherTable {
   date_of_birth: Date;
   address: string;
   avatar: string;
+}
+
+export interface CourseTable {
+  id: Generated<number>;
+  status: CourseStatus;
+  title: string;
+  level: number;
+  summary?: string;
+  description?: string;
+  thumbnail?: string;
+  updated_at: ColumnType<Date, string | undefined, never>;
+}
+
+enum CourseStatus {
+  DRAFT = "DRAFT",
+  IN_REVIEW = "IN_REVIEW",
+  APPROVED = "APPROVED",
+  PUBLISHED = "PUBLISHED",
+  ARCHIVED = "ARCHIVED",
 }
