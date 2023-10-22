@@ -15,14 +15,10 @@ express()
     // Login
     app.use("/login", jsonRpcRouter(loginJsonRpcMethodHandlers));
 
-    // JWT token must be processed for following routes
+    // JWT token must be processed for all following routes
     app.use(processJWT);
-
     app.use("/study", jsonRpcRouter(studyJsonRpcMethodHandlers));
-
-    // User type must be ADMIN for the following routes
-    app.use(isAdmin);
-    app.use("/admin", jsonRpcRouter(adminJsonRpcMethodHandlers));
+    app.use("/admin", isAdmin, jsonRpcRouter(adminJsonRpcMethodHandlers));
   })
   .listen(3000, () => {
     console.log("Express server started on port 3000.");
