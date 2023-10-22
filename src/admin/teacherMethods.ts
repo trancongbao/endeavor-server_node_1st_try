@@ -1,8 +1,8 @@
 import bcrypt from 'bcryptjs';
-import endeavorDB from './endeavorDB';
-import { TeacherInsertable, TeacherSelectable } from './teacherTable';
+import endeavorDB, { TeacherTable } from './endeavorDB';
+import { Insertable, Updateable } from 'kysely';
 
-export function createTeacher(teacher: TeacherInsertable) {
+export function createTeacher(teacher: Insertable<TeacherTable>) {
   bcrypt.hash(teacher.password, 13, (_, hashedPassword) => {
     teacher.password = hashedPassword;
   });

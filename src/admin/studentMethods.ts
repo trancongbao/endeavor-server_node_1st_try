@@ -1,9 +1,10 @@
 import 'scope-extensions-js';
 import bcrypt from 'bcryptjs';
 import endeavorDB from './endeavorDB';
-import { StudentInsertable, StudentUpdatable } from './studentTable';
+import { StudentTable } from './endeavorDB';
+import { Insertable, Updateable } from 'kysely';
 
-export function createStudent(student: StudentInsertable) {
+export function createStudent(student: Insertable<StudentTable>) {
   bcrypt.hash(student.password, 13, (_, hashedPassword) => {
     student.password = hashedPassword;
   });
@@ -12,7 +13,7 @@ export function createStudent(student: StudentInsertable) {
     .insertInto('student')
     .values(student)
     .returningAll()
-    .executeTakeFirstOrThrow()
+    .executeTakeFirstOrThrow();
 }
 
 export function readStudent({ username }: { username: string }) {
@@ -23,13 +24,13 @@ export function readStudent({ username }: { username: string }) {
     .executeTakeFirstOrThrow();
 }
 
-export function updateStudent(student: StudentUpdatable) {
+export function updateStudent(student: Updateable<StudentTable>) {
   return endeavorDB
     .updateTable('student')
     .where('username', '=', student.username!!)
     .set(student)
     .returningAll()
-    .executeTakeFirstOrThrow()
+    .executeTakeFirstOrThrow();
 }
 
 export function deleteStudent({ username }: { username: string }) {
@@ -37,5 +38,5 @@ export function deleteStudent({ username }: { username: string }) {
     .deleteFrom('student')
     .where('username', '=', username)
     .returningAll()
-    .executeTakeFirstOrThrow()
+    .executeTakeFirstOrThrow();
 }

@@ -1,8 +1,6 @@
 import 'scope-extensions-js';
 import { Pool } from 'pg';
 import { Kysely, PostgresDialect } from 'kysely';
-import { TeacherTable } from './teacherTable';
-import { StudentTable } from './studentTable';
 
 export default new Pool({
   host: 'localhost',
@@ -17,5 +15,30 @@ export default new Pool({
 
 interface Database {
   teacher: TeacherTable;
-  student: StudentTable
+  student: StudentTable;
+}
+
+export interface StudentTable {
+  username: string;
+  password: string;
+  surname: string;
+  given_name: string;
+  email: string;
+  phone: string;
+  date_of_birth: Date;
+  address: string;
+  avatar: string;
+  proficiency: number;
+}
+
+export interface TeacherTable {
+  username: string;
+  password: string;
+  surname: string;
+  given_name: string;
+  email: string;
+  phone: string;
+  date_of_birth: Date;
+  address: string;
+  avatar: string;
 }
