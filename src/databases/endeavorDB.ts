@@ -17,6 +17,7 @@ interface Database {
   teacher: TeacherTable;
   student: StudentTable;
   course: CourseTable;
+  word: WordTable;
 }
 
 export interface StudentTable {
@@ -61,4 +62,14 @@ enum CourseStatus {
   APPROVED = "APPROVED",
   PUBLISHED = "PUBLISHED",
   ARCHIVED = "ARCHIVED",
+}
+
+export interface WordTable {
+  id: Generated<number>;
+  word: string;
+  definition: string;
+  phonetic: string;
+  part_of_speech: string;
+  audio_uri: string;
+  image_uri: string;
 }

@@ -23,3 +23,5 @@ export function updateCourse(course: Updateable<CourseTable>) {
 export function deleteCourse({ id }: { id: number }) {
   return endeavorDB.deleteFrom("course").where("id", "=", id).returningAll().executeTakeFirstOrThrow();
 }
+
+export function submitCourse() {}

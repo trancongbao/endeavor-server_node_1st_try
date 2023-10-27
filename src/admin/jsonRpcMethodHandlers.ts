@@ -2,7 +2,7 @@ import "scope-extensions-js";
 import { JSONRPCServer } from "json-rpc-2.0";
 import { createTeacher, readTeacher, updateTeacher, deleteTeacher } from "./teacherMethods";
 import { createStudent, readStudent, updateStudent, deleteStudent } from "./studentMethods";
-import { createCourse, readCourse, updateCourse, deleteCourse } from "./courseMethods";
+import { createCourse, readCourse, updateCourse, deleteCourse, submitCourse } from "./courseMethods";
 
 /*
  * JSON-RPC Method Handlers
@@ -25,4 +25,5 @@ export default new JSONRPCServer().apply(function () {
   this.addMethod("readCourse", readCourse);
   this.addMethod("updateCourse", updateCourse);
   this.addMethod("deleteCourse", deleteCourse);
+  this.addMethod("submitCourse", submitCourse);
 });
