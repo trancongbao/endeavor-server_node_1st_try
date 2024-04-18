@@ -1,6 +1,8 @@
 name: endeavor
+
 services:
   postgres:
+    container_name: postgres
     image: postgres
     restart: always
     environment:
@@ -17,10 +19,11 @@ services:
     image: dpage/pgadmin4
     container_name: pgadmin4
     restart: always
-    ports:
-      - "5433:80"
     environment:
       PGADMIN_DEFAULT_EMAIL: pgadmin_default_email@gmail.com
       PGADMIN_DEFAULT_PASSWORD: pgadmin_default_password
     volumes:
       - ./postgres/var_lib_pgadmin:/var/lib/pgadmin
+      - ./postgres/pgadmin4/servers.json:/pgadmin4/servers.json
+    ports:
+      - 5433:80
