@@ -16,7 +16,7 @@ services:
       - 5432:5432
 
   pgadmin:
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4:8.5
     container_name: pgadmin4
     restart: always
     environment:
@@ -25,5 +25,6 @@ services:
     volumes:
       - ./postgres/var_lib_pgadmin:/var/lib/pgadmin
       - ./postgres/pgadmin4/servers.json:/pgadmin4/servers.json
+      - ./postgres/pgadmin4/preferences.json:/pgadmin4/preferences.json
     ports:
       - 5433:80
